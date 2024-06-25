@@ -8,7 +8,7 @@ python3 ecolityping.py -h
 # Process
 python3 postecolityping.py -h
 # Summarize
-python3 qc_ecoli_summary.py -h
+python3 qcecolisummary.py -h
 ```
 
 ## Installation
@@ -43,7 +43,7 @@ python3 ecolityping.py -i SRR26510933 -R1 test/SRR26510933_1.fastq.gz -R2 test/S
 # Process
 python3 postecolityping.py -i SRR26510933 -d test -stbit "STNA;NA:NA"
 # Summarize
-python3 qc_ecoli_summary.py -i test -o test
+python3 qcecolisummary.py -i test -o test
 ```
 
 ## Output

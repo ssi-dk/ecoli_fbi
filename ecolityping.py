@@ -30,7 +30,7 @@ def make_folder_if_not_exists(folder_name):
 # Main
 # Update dbs
 ECOLIGENESDB = os.path.abspath(os.path.join(args.db_path, "ecoligenes", "ecoligenes"))
-if args.update == "yes":
+if args.update == "yes" or args.update == "True":
 	print('# Updating db...')
 	# Run KMA
 	command=f"{args.kma_path}/kma_index -i {ECOLIGENESDB}.fsa -o {args.db_path}/ecoligenes/ecoligenes"
