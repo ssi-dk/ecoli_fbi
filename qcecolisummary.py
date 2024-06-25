@@ -8,7 +8,7 @@ import os
 import subprocess
 
 
-parser = argparse.ArgumentParser(description='qc_ecoli_summary.py')
+parser = argparse.ArgumentParser(description='qcecolisummary.py')
 parser.add_argument("-i", "--input_dir", default='input')
 parser.add_argument("-o", "--output_dir", default='output')
 args = parser.parse_args()
@@ -51,6 +51,7 @@ for sampledir in sampledirs:
 	if os.path.exists(outfile_path):
 		outfile=open(outfile_path,"a")
 		header="true"
+		line_ending='\n'
 	else:
 		outfile=open(outfile_path,"w")
 		header="false"
@@ -64,4 +65,4 @@ for sampledir in sampledirs:
 			header="true"
 		proc=subprocess.Popen("".join(["tail -n +2 ", file]), stdout=subprocess.PIPE, shell=True)
 		(out, err)=proc.communicate()
-		outfile.write(out.decode())
+		outfile.write(out.decode() + '\n')
