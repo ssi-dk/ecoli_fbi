@@ -75,7 +75,7 @@ def write_to_json(csv_data, json_outfile):
 SPECOLIFBIDIR=os.path.join(args.indir, args.sampleid, "sp_ecoli_fbi") # KMA results
 OUTFILE=os.path.join(args.indir, args.sampleid, f"{args.sampleid}.tsv")
 rundir = get_rundir(args.indir)
-wgsdate, wgsnumber = get_wgs_date_and_number(args.indir)
+wgsdate, wgsnumber = get_wgs_date_and_number(rundir)
 ST_list=args.stbit.split(",") # ['ST:11', 'adk:12', 'fumC:12', 'gyrB:8', 'icd:12', 'mdh:15', 'purA:2', 'recA:2']
 ST=ST_list.pop(0).split(":")[1] # 11
 STgenes=",".join(ST_list) # adk:12,fumC:12,gyrB:8,icd:12,mdh:15,purA:2,recA:2
