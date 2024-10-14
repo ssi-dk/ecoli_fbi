@@ -31,6 +31,4 @@ jobs:
       # step 3
       - name: Run test script
         run: 
-          conda init
-          conda activate ecoli_pipeline
-          make test
+          bash -c "conda init && conda activate ecoli_pipeline && make test"
