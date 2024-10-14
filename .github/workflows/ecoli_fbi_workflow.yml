@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
     strategy:
       matrix:
         os: ["ubuntu-latest"]
@@ -30,5 +33,6 @@ jobs:
 
       # step 3
       - name: Run test script
-        run: 
-          bash -c "conda init && conda activate ecoli_pipeline && make test"
+        run: |
+          conda activate ecoli_pipeline
+          make test
