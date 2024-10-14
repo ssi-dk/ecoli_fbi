@@ -1,0 +1,35 @@
+name: ecoli food bourne infection workflow
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.11"]
+
+    steps:
+      # step 1: checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # step 2 use environment.yml dependencies to create conda environment
+      - name: Set up miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          environment-file: environment.yml
+          activate-environment: ecoli_pipeline
+          python-version: ${{ matrix.python-version }}
+
+      # step 3
+      - name: Run test script
+        run: 
+          conda activate ecoli_pipeline
+          make test

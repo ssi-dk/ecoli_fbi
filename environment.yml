@@ -1,0 +1,17 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - snakemake-minimal==8.4.11
+  - kma 
+  - python=3.11
+  - git
+  - pip
+  - pip:
+      - openpyxl
+      - pandas
+      - envyaml
+      - pytest
+      - requests 
+      - python-dotenv
