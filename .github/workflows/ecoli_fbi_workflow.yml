@@ -40,8 +40,10 @@ jobs:
       # Step 4: Trigger bifrost_sp_ecoli workflow
       - name: Workflow dispatch with API - trigger bifrost_sp_ecoli workflow 
         run: |
-          curl -X POST \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+        response=$(curl -L \
+          -X POST \
           -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           https://api.github.com/repos/ssi-dk/bifrost_sp_ecoli/actions/workflows/bifrost_sp_ecoli_workflow.yml/dispatches \
-          -d '{"event_type":"ecoli-fbi-webhook"}'
+          -d '{"event_type":"ecoli-fbi-webhook"}')
+        echo "$response"
