@@ -25,7 +25,11 @@ md5serotypecheck:
 processing:
 	python3 postecolityping.py -i SRR26510933 -d test -stbit "STNA;NA:NA"
 
-# Step 4: Check MD5 checksum
+# Step 4: Check MD5 checksum - but remove variable date to accurately represent MD5sum
 md5processcheck:
 	cd test && \
+	sed -i -E 's/(\"wgsdate\":\s?\")(.{14})(.*)/\1\3/' SRR26510933/SRR26510933.json && \
+	awk -v OFS="\t" '{$$(11)=""; print $0}' SRR26510933/SRR26510933.tsv > SRR26510933/SRR26510933v2.tsv && \
+	md5sum SRR26510933/SRR26510933.json && \
+	md5sum SRR26510933/SRR26510933v2.tsv && \
 	md5sum -c Processsums.md5
