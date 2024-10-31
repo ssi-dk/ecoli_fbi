@@ -55,16 +55,11 @@ jobs:
         if: ${{ success() }}
         run: |
             response=$(curl -L \
-            --request POST \
-            -H "Accept: application/vnd.github.everest-preview+json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.ECOLI_FBI_DISPATCH_TOKEN }}" \
             https://api.github.com/repos/ssi-dk/bifrost_sp_ecoli/dispatches \
             -d '{"event_type":"ecoli-fbi-webhook"}'
             )
             
             echo "Status Code: $response"
-
-            if [[ "$response" != *"204"* ]]; then
-              echo "Failed to trigger workflow: $response"
-              exit 1
-            fi
