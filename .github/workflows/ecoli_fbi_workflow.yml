@@ -3,8 +3,6 @@ name: ecoli food bourne infection workflow
 on:
   push:
     branches: ["main"]
-    tags:
-      - "!**"
   pull_request:
     branches: ["main"]
 
@@ -39,18 +37,7 @@ jobs:
           conda activate ecoli_pipeline
           make test
 
-      # Step 4: Create tag if test passes
-      #- name: Create tag
-      #  if: ${{ success() }}
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #  run: |
-      #    TAG_NAME="ecoli_fbi.$('%Y%m%d').${GITHUB_SHA::7}"  # Use the first 7 characters of the commit SHA
-      #    git tag $TAG_NAME
-      #    git push origin $TAG_NAME
-      #    echo "Creating tag: $TAG_NAME"
-
-      # Step 5: Trigger bifrost_sp_ecoli workflow
+      # Step 4: Trigger bifrost_sp_ecoli workflow
       - name: Workflow dispatch with API - trigger bifrost_sp_ecoli workflow 
         if: ${{ success() }}
         run: |
@@ -62,4 +49,4 @@ jobs:
             -d '{"event_type":"ecoli-fbi-webhook"}'
             )
             
-            echo "Status Code: $response"
+            echo "Response: $response"
