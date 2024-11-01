@@ -37,7 +37,7 @@ jobs:
       - name: Run test script
         run: |
           conda activate ecoli_pipeline
-          make testfail
+          make test
 
       # step 4
       - name: Check git tag and create a new tag if tests pass
