@@ -39,7 +39,12 @@ jobs:
           conda activate ecoli_pipeline
           make test
 
-      # Step 4: Trigger bifrost_sp_ecoli workflow
+      # step 4
+      - name: Check git tag
+        run: |
+          git describe
+      
+      # Step 5: Trigger bifrost_sp_ecoli workflow
       - name: Workflow dispatch with API - trigger bifrost_sp_ecoli workflow 
         if: ${{ success() }}
         run: |
