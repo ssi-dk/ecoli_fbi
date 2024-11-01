@@ -40,9 +40,17 @@ jobs:
           make test
 
       # step 4
-      - name: Check git tag
+      - name: Check git tag and create a new tag if tests pass
+        if: ${{ success() }}
         run: |
-          git describe
+          COMMIT_SHORT=$(git rev-parse --short=7 HEAD)
+          DIR_NAME=$(basename $(pwd))
+          TAG_NAME="${DIR_NAME}.${GITHUB_SHA::7}.$(date +%Y%m%d)"
+          git tag $TAG_NAME
+          git push origin $TAG_NAME --no-verify
+          echo "$TAG_NAME"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       # Step 5: Trigger bifrost_sp_ecoli workflow
       - name: Workflow dispatch with API - trigger bifrost_sp_ecoli workflow 
