@@ -45,7 +45,7 @@ jobs:
         run: |
           COMMIT_SHORT=$(git rev-parse --short=7 HEAD)
           DIR_NAME=$(basename $(pwd))
-          TAG_NAME="${DIR_NAME}.${GITHUB_SHA::7}.$(date +%Y%m%d)"
+          TAG_NAME="${DIR_NAME}.${GITHUB_SHA::7}.$(date +%d-%m-%Y)"
           git tag $TAG_NAME
           git push origin $TAG_NAME --no-verify
           echo "$TAG_NAME"
