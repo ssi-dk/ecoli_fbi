@@ -20,41 +20,75 @@ args=parser.parse_args()
 
 # Functions
 def get_rundir(indir) -> str:
-	"""This function gets the rundir from a dir path."""
-	rundir = os.path.basename(indir)
-	return rundir
-
+    """This function gets the rundir from a dir path."""
+    if indir == "":  # Check if the indir is an empty string
+        return ""  # Return an empty string if the input is empty
+    rundir = os.path.basename(indir)
+    return rundir
 
 def get_folder_creation_date(folder_path):
+    """This function gets the creation date of a folder."""
+    if folder_path == "":  # Check if the folder path is an empty string
+        return ""  # Return an empty string if the folder path is empty
+    
+    if not os.path.exists(folder_path):
+        raise FileNotFoundError(f"The folder path does not exist: {folder_path}")
+    
     creation_time = os.path.getctime(folder_path)
     creation_date = datetime.datetime.fromtimestamp(creation_time)
     formatted_date = str(creation_date.strftime('%y%m%d'))
     return formatted_date
 
-
 def convert_number_to_date(number):
-	"""This function converts a number to a date from 221117 to a 2022-11-17."""
-	year=int(str(number)[:2])
-	month=int(str(number)[2:4])
-	day=int(str(number)[4:6])
-	# Create a date string in the "YYYY-MM-DD" format
-	date_string=f"20{year:02d}-{month:02d}-{day:02d}"
-	return date_string
-
+    """This function converts a number to a date from 221117 to 2022-11-17."""
+    # Ensure the number is a string and starts with a valid numeric date
+    number_str = str(number)
+    
+    try:
+        if len(number_str) < 6 or not number_str.isdigit():  # Ensure it's at least 6 digits and all digits for correct date format
+            raise ValueError(f"Invalid input format for date conversion: {number_str}")
+        
+        year = int(number_str[:2])  # First two characters should represent the year
+        month = int(number_str[2:4])  # Next two characters should represent the month
+        day = int(number_str[4:6])  # Last two characters should represent the day
+        
+        # Create a date string in the "YYYY-MM-DD" format
+        date_string = f"20{year:02d}-{month:02d}-{day:02d}"
+        return date_string
+    
+    except Exception as e:
+        # If an error occurs, return an empty string
+        print(f"Error in date conversion: {e}. Returning empty string.")
+        return ""
 
 def get_wgs_date_and_number(rundir):
-	"""This function separates the rundir into date and experiment_name/wgsnumber."""
-	if "_" in rundir:
-		#231006_NB551234_0051_N_WGS_743_AHNLHHAFX5
-		rundir_list=rundir.split("_") 	# ['231006', 'NB551234', '0051', 'N', 'WGS', '743', 'AHNLHHAFX5']
-		wgsdate = convert_number_to_date(rundir_list[0]) # 231006 -> 2023-10-06
-		wgsnumber="_".join(rundir_list[3:6]) # N_WGS_743
-	else:
-		wgsnumber = rundir
-		date = get_folder_creation_date(rundir)
-		wgsdate = convert_number_to_date(date)
-	return wgsdate, wgsnumber
-
+    """This function separates the rundir into date and experiment_name/wgsnumber."""
+    if rundir == "":  # Check if rundir is an empty string
+        return "", ""  # Return empty strings for both wgsdate and wgsnumber
+    
+    if "_" in rundir:
+        rundir_list = rundir.split("_")  # ['231006', 'NB551234', '0051', 'N', 'WGS', '743', 'AHNLHHAFX5']
+        
+        # Check if the first value in rundir_list is a valid date format (YYMMDD)
+        wgsdate = convert_number_to_date(rundir_list[0])  # 231006 -> 2023-10-06
+        
+        # If wgsdate is an empty string, then it's an invalid date format
+        if wgsdate == "":
+            print(f"Invalid date format in rundir: {rundir_list[0]}. Returning empty strings.")
+            return "", ""  # Return empty strings if date is invalid
+        
+        wgsnumber = "_".join(rundir_list[3:6])  # N_WGS_743
+    else:
+        # When no "_" in rundir, check if it's numeric first
+        if not rundir.isdigit() or len(rundir) < 6:
+            print(f"Invalid rundir format for date extraction: {rundir}. Returning empty string.")
+            wgsdate = ""
+        else:
+            date = get_folder_creation_date(rundir)
+            wgsdate = convert_number_to_date(date)
+        wgsnumber = rundir  # Assuming the rundir itself is the experiment number
+    
+    return wgsdate, wgsnumber
 
 def print_header_to_output(OUTFILE):
 	header="isolate\twzx\twzy\tfliC\tOH\tstx\teae\tehx\tother\twgsrun\twgsdate\tST\tSTgenes\tverbose\n"
@@ -223,3 +257,9 @@ csv_data = dict(zip(keys, lineelements))
 #print(csv_data)
 json_outfile=os.path.join(os.path.join(args.indir, args.sampleid, f"{args.sampleid}.json"))
 write_to_json(csv_data, json_outfile)
+
+
+if __name__ == "__main__":
+	file = "/home/projects/fvst_ssi_dtu/apps/sofi_bifrost_dev/scripts/bifrost/components/bifrost_sp_ecoli/bifrost_sp_ecoli/ecoli_fbi/postecolityping.py"
+	
+	print(f"file string : {file}")
