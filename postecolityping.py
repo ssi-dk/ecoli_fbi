@@ -63,31 +63,37 @@ def convert_number_to_date(number):
 
 def get_wgs_date_and_number(rundir):
     """This function separates the rundir into date and experiment_name/wgsnumber."""
-    if rundir == "":  # Check if rundir is an empty string
-        return "", ""  # Return empty strings for both wgsdate and wgsnumber
+    # Default to current date if there's an error
+    current_date = datetime.datetime.today().strftime('%Y-%m-%d')  # Get today's date in YYYY-MM-DD format
+    
+    if rundir == "":
+        return current_date, ""  # If rundir is empty, return today's date and empty wgsnumber
     
     if "_" in rundir:
-        rundir_list = rundir.split("_")  # ['231006', 'NB551234', '0051', 'N', 'WGS', '743', 'AHNLHHAFX5']
+        rundir_list = rundir.split("_")  # Split rundir into parts
         
-        # Check if the first value in rundir_list is a valid date format (YYMMDD)
+        # Try to extract the date from the first part (assuming it's in YYMMDD format)
         wgsdate = convert_number_to_date(rundir_list[0])  # 231006 -> 2023-10-06
         
-        # If wgsdate is an empty string, then it's an invalid date format
+        # If date conversion fails (empty string), use the current date
         if wgsdate == "":
-            print(f"Invalid date format in rundir: {rundir_list[0]}. Returning empty strings.")
-            return "", ""  # Return empty strings if date is invalid
+            print(f"Invalid date format in rundir: {rundir_list[0]}. Using current date: {current_date}")
+            wgsdate = current_date
         
-        wgsnumber = "_".join(rundir_list[3:6])  # N_WGS_743
+        # Extract wgsnumber from the appropriate parts of rundir
+        wgsnumber = "_".join(rundir_list[3:6])  # e.g., N_WGS_743
     else:
-        # When no "_" in rundir, check if it's numeric first
-        if not rundir.isdigit() or len(rundir) < 6:
-            print(f"Invalid rundir format for date extraction: {rundir}. Returning empty string.")
-            wgsdate = ""
-        else:
-            date = get_folder_creation_date(rundir)
-            wgsdate = convert_number_to_date(date)
-        wgsnumber = rundir  # Assuming the rundir itself is the experiment number
-    
+        # If rundir doesn't have underscores, assume it's a single value
+        wgsnumber = rundir
+        # Try to get folder creation date (falling back to current date if needed)
+        date = get_folder_creation_date(rundir)
+        wgsdate = convert_number_to_date(date)
+        
+        # If folder creation date isn't valid, fallback to current date
+        if wgsdate == "":
+            print(f"Invalid folder creation date for rundir: {rundir}. Using current date: {current_date}")
+            wgsdate = current_date
+        
     return wgsdate, wgsnumber
 
 def print_header_to_output(OUTFILE):
