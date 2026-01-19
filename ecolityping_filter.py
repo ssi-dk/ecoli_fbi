@@ -514,7 +514,7 @@ def determine_adhesin_virulence(pass_df: pd.DataFrame, fail_df: pd.DataFrame, sa
     prefixes = ["eae", "ehxA"]
     type_pass_details = build_details_from_df(pass_df, prefixes, include_gene=True)
     type_fail_details = build_details_from_df(fail_df, prefixes, include_gene=True)
-    type_details = f"typepass:{type_pass_details}|typefail:{type_fail_details}"
+    type_details = f"pass:{type_pass_details}|fail:{type_fail_details}"
 
     out = pd.DataFrame([{
         "sample_id": sample_id,
