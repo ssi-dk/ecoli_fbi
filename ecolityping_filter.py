@@ -9,6 +9,14 @@ import yaml
 
 CORE_PREFIXES = ["stx", "wzx", "wzy", "wzt", "wzm", "flic", "fli", "fl", "eae", "ehxa"]
 
+FINAL_DETAIL_SPECS: List[Tuple[str, str]] = [
+    ("toxin_details", "toxin"),
+    ("O_type_details", "Otype"),
+    ("H_type_details", "Htype"),
+    ("type_details", "adhesin_virulence"),
+    ("other_details", "other"),
+]
+
 # ------------------------- Parsing & Threshold resolution ------------------------- #
 
 def parse_gene_from_template(template: str) -> Tuple[str, str]:
@@ -283,6 +291,8 @@ def build_details_from_df(df: pd.DataFrame, prefixes: List[str], include_gene: b
 
     return "-" if len(parts) == 0 else ";".join(parts)
 
+#---------------------------
+
 def determine_stx_subtype(pass_df: pd.DataFrame, fail_df: pd.DataFrame, sample_id: str) -> pd.DataFrame:
     """
     Output columns:
@@ -325,7 +335,7 @@ def determine_stx_subtype(pass_df: pd.DataFrame, fail_df: pd.DataFrame, sample_i
     toxin_pass_details = build_details_from_df(pass_df, ["stx"], include_gene=False)
     toxin_fail_details = build_details_from_df(fail_df, ["stx"], include_gene=False)
 
-    toxin_details = f"stxpass:{toxin_pass_details}|stxfail:{toxin_fail_details}"
+    toxin_details = f"pass:{toxin_pass_details}|fail:{toxin_fail_details}"
 
     stx_out = pd.DataFrame([{
         "sample_id": sample_id,
@@ -413,7 +423,7 @@ def determine_O_type(pass_df: pd.DataFrame, fail_df: pd.DataFrame, sample_id: st
     prefixes = ["wzx", "wzy", "wzt", "wzm"]
     O_type_pass_details = build_details_from_df(pass_df, prefixes, include_gene=True)
     O_type_fail_details = build_details_from_df(fail_df, prefixes, include_gene=True)
-    O_type_details = f"Opass:{O_type_pass_details}|Ofail:{O_type_fail_details}"
+    O_type_details = f"pass:{O_type_pass_details}|fail:{O_type_fail_details}"
 
     out = pd.DataFrame([{
         "sample_id": sample_id,
@@ -527,14 +537,6 @@ def determine_adhesin_virulence(pass_df: pd.DataFrame, fail_df: pd.DataFrame, sa
 
     return out
 
-FINAL_DETAIL_SPECS: List[Tuple[str, str]] = [
-    ("toxin_details", "toxin"),
-    ("O_type_details", "O"),
-    ("H_type_details", "H"),
-    ("type_details", "adhesin_virulence"),
-    ("other_details", "other"),
-]
-
 def is_missing_detail_value(v: object) -> bool:
     if v is None:
         return True
@@ -555,7 +557,7 @@ def merge_final_outputs(
     o_out: pd.DataFrame,
     h_out: pd.DataFrame,
     av_out: pd.DataFrame,
-    other_out: pd.DataFrame,  # <-- add this
+    other_out: pd.DataFrame,
 ) -> pd.DataFrame:
     """
     Merge per-module outputs on sample_id and collapse the *_details (NOT pass/fail)
@@ -567,7 +569,7 @@ def merge_final_outputs(
     final_df = stx_out.merge(o_out, on="sample_id", how="outer")
     final_df = final_df.merge(h_out, on="sample_id", how="outer")
     final_df = final_df.merge(av_out, on="sample_id", how="outer")
-    final_df = final_df.merge(other_out, on="sample_id", how="outer")  # <-- add this
+    final_df = final_df.merge(other_out, on="sample_id", how="outer") 
 
     # build combined verbose column from the final *_details fields
     final_df["verbose"] = final_df.apply(build_verbose_from_detail_columns, axis=1)
